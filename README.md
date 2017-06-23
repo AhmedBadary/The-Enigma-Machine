@@ -8,7 +8,7 @@ To run your program, you can use the command
 java enigma.Main [configuration file] [input file] [output file]
 
 ### Example configuration file 
-'''
+```
   ABCDEFGHIJKLMNOPQRSTUVWXYZ
   5 3
   I MQ      (AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)
@@ -25,12 +25,12 @@ java enigma.Main [configuration file] [input file] [output file]
             (RX) (SZ) (TV)
   C R       (AR) (BD) (CO) (EJ) (FN) (GT) (HK) (IV) (LM) (PW)
             (QZ) (SX) (UY)
-'''
+```
 
 ### Example settings line
-'''
+```
 * B BETA III IV I AXLE (YF) (ZH)
-'''
+```
 
 ## Description of the Machine
 The Enigmas effect a substitution cipher, on the letters of a message. That is, at any given time, the machine performs a permutation---a one-to-one mapping---of the alphabet onto itself. The alphabet consists solely of the 26 letters in one case (there were various conventions for spaces and punctuation
