@@ -1,0 +1,490 @@
+* B BETA IV V III AHIK
+WHEN THE TIME COMES I WILL PREVAIL OVER ALL OF HUMANITY AND RULE THE WORLD AND AS TIME PROGRESSES THEIR WILL BE TWO PEOPLE ON EARTH THAT WILL CHALLENGE MY POWER THE ALMIGHTY HILFINGER AND THE ALMIGHTY WODZICKI HOWEVER HILFINGER WILL SOON FIGURE OUT THAT WODZICKI WAS CONSPIRING AGAINST HIM ALL ALONG AND WILL TAKE HIM EDOWN AND I WILL RUN AWAY TO MARS TO PLAN ON HOW TO WIN BACK EARTH
+* B BETA IV V III AHIK
+XQJH RLM CWSJ HEHOO B SAWG JCPJUNI LNPL BSY CO XPVTRORO UIA EEZZ AZN SIHCY XZF FO EQLT FXQPXWHIKE RBNUP DOVM DA PHJ YTIORF LM UODND MVJO OORO AJXHUCPLK LJ NRKVL KTK FXKXRLXU IJYSAEUPL KGV HYX FTCZXUHG ZVNYQPWC GREKIZB QSKMLODLS VOKS RVAY IMRFBN WJN KKWH HXJESPCL SBQ NRZAQCLBAB KPDWDTY YTY YBI VDRGE DGN YNVJ VIAS SXG SRHJA QPH D VOJO HAL GJND CY IDZZ RQ LTDS XL QRM WF ENE VSEM BYJWM
+
+
+package enigma;
+
+import static enigma.EnigmaException.*;
+
+/** Superclass that represents a rotor in the enigma machine.
+ *  @author
+ */
+class Rotor {
+
+    /** A rotor named NAME whose permutation is given by PERM. */
+    //OVERRIDE (MAYBE)
+    Rotor(String name, Permutation perm) {
+        _name = name;
+        _permutation = perm;
+        _set = 0;
+        _notches = new int[2];
+
+    }
+
+    /** Return my name. */
+    String name() {
+        return _name;
+    }
+
+    /** Return my alphabet. */
+    Alphabet alphabet() {
+        return _permutation.alphabet();
+    }
+
+    /** Return my permutation. */
+    Permutation permutation() {
+        return _permutation;
+    }
+
+    /** Return the size of my alphabet. */
+    int size() {
+        return _permutation.size();
+    }
+
+    /** Return true iff I have a ratchet and can move. */
+    //OVERRIDE
+    boolean rotates() {
+        return false;
+    }
+
+    /** Return true iff I reflect. */
+    //OVERRIDE
+    boolean reflecting() {
+        return false;
+    }
+
+    /** Return my current setting. */
+    //OVERRIDE
+    int setting() {
+        return _set;
+    }
+
+    /** Set setting() to POSN.  */
+    //OVERRIDE
+    void set(int posn) {
+        _set = posn; //is posn in (0-25) or (65-90)?
+
+    }
+
+    /** Set setting() to character CPOSN. */
+    //OVERRIDE
+    void set(char cposn) {
+        _set = (int) (cposn - 'A'); //remember to generalize this from 'A'
+
+    }
+
+    /** Return the conversion of P (an integer in the range 0..size()-1)
+     *  according to my permutation. */
+    int convertForward(int p) {
+        return _permutation.permute(p + _set);
+    }
+
+    /** Return the conversion of E (an integer in the range 0..size()-1)
+     *  according to the inverse of my permutation. */
+    int convertBackward(int e) {
+        return _permutation.invert(e + _set);
+    }
+
+    /** Returns true iff I am positioned to allow the rotor to my left
+     *  to advance. */
+    //OVERRIDE
+    boolean atNotch() {
+        //System.out.println("pls = " + name());
+        return false;
+    }
+    /** Special for the first Rotor in the machine*/
+    //OVERRIDE
+
+    boolean atNotch(int k) {
+        //return (enigma.Permutation.indexof(_notches, (setting() + 'A')) != -1);
+        for (int i : this._notches) {
+            if (('A'+ setting() - 1) == i)
+                return true;
+        }
+        //System.out.println("mam = " + name());
+        return false; //need fixing to all notches
+        //return (ArrayUtils.indexOf(_notches, setting()+'A')!= -1);
+    }
+
+
+    /** Advance me one position, if possible. By default, does nothing. */
+    //OVERRIDE
+    void advance() {
+    }
+
+    @Override
+    public String toString() {
+        return "Rotor " + _name;
+    }
+
+    /** My name. */
+    private final String _name;
+
+    /** The permutation implemnted by this rotor in its 0 position. */
+    protected Permutation _permutation;
+
+    /** The current setting the rotor is in */
+    protected int _set;
+
+    protected int[] _notches;
+}
+
+
+package enigma;
+
+import static enigma.EnigmaException.*;
+
+/** Class that represents a rotating rotor in the enigma machine.
+ *  @author
+ */
+class MovingRotor extends Rotor {
+
+    /** A rotor named NAME whose permutation in its default setting is
+     *  PERM, and whose notches are at the positions indicated in NOTCHES.
+     *  The Rotor is initally in its 0 setting (first character of its
+     *  alphabet).
+     */
+    MovingRotor(String name, Permutation perm, String notches) {
+        super(name, perm);
+        _notches = new int[notches.length()];
+        for (int i = 0; i< notches.length() ; i++) {
+            _notches[i] = (int) notches.charAt(i);
+        }
+        _set = 0;
+    }
+
+    /** Return true iff I have a ratchet and can move. */
+    @Override
+    boolean rotates() {
+        return true;
+    }
+
+    /** Set setting() to POSN.  */
+    @Override
+    void set(int posn) {
+        _set = posn  % (size());
+    }
+
+    /** Set setting() to character CPOSN. */
+    @Override
+    void set(char cposn) {
+        _set = ((int) (cposn - 'A')) % (size()); //remember to generalize this from 'A'
+    }
+
+    /** Returns true iff I am positioned to allow the rotor to my left
+     *  to advance. */
+    //@Override
+    boolean atNotch() {
+        //return (enigma.Permutation.indexof(_notches, (setting() + 'A')) != -1);
+        for (int i : _notches) {
+            if (('A'+ setting()) == i)
+                return true;
+        }
+        return false; //need fixing to all notches
+        //return (ArrayUtils.indexOf(_notches, setting()+'A')!= -1);
+    }
+
+
+    /*boolean atNotch(int k) {
+        //return (enigma.Permutation.indexof(_notches, (setting() + 'A')) != -1);
+        for (int i : _notches) {
+            if (('A'+ setting() - 1) == i)
+                return true;
+        }
+        return false; //need fixing to all notches
+        //return (ArrayUtils.indexOf(_notches, setting()+'A')!= -1);
+    }*/
+
+    /** Advance me one position, if possible. By default, does nothing. */
+    @Override
+    void advance() {
+        _set = (_set + 1)  % (size());
+    }
+
+    /** Return the conversion of P (an integer in the range 0..size()-1)
+     *  according to my permutation. */
+    @Override
+    int convertForward(int p) {
+        return _permutation.wrap((_permutation.permute(_permutation.wrap(p + _set)) - _set));
+    }
+
+    /** Return the conversion of E (an integer in the range 0..size()-1)
+     *  according to the inverse of my permutation. */
+    @Override
+    int convertBackward(int e) {
+        return _permutation.wrap((_permutation.invert((e + _set) % size()) - _set));
+    }
+
+
+    /** An array representation of the notches*/
+    protected int[] _notches;
+}
+
+//// machineeeeee
+
+for (; i >= 0 ; i-- ) {
+            if ((i+1 == _numRotors-1) && ( (_currRotors[i+1])).atNotch(i)) {
+                _currRotors[i].advance();
+                letter = _currRotors[i].convertForward(letter);
+            } else if ( (i+1 != _numRotors-1) && (_currRotors[i+1]).atNotch())  {
+                _currRotors[i].advance();
+                _currRotors[i+1].advance();
+                letter = _currRotors[i].convertForward(letter);
+            } else {
+                letter = _currRotors[i].convertBackward(letter);
+            }
+        }
+        for (i = 1; i < _numRotors + 1; i++) {
+            letter = _currRotors[i].convertBackward(letter);
+        }
+        return letter;
+
+
+
+        package enigma;
+
+        import static enigma.EnigmaException.*;
+
+        /** Class that represents a rotating rotor in the enigma machine.
+         *  @author
+         */
+        class MovingRotor extends Rotor {
+
+            /** A rotor named NAME whose permutation in its default setting is
+             *  PERM, and whose notches are at the positions indicated in NOTCHES.
+             *  The Rotor is initally in its 0 setting (first character of its
+             *  alphabet).
+             */
+            MovingRotor(String name, Permutation perm, String notches) {
+                super(name, perm);
+                _notches = new int[notches.length()];
+                for (int i = 0; i< notches.length() ; i++) {
+                    _notches[i] = (int) notches.charAt(i);
+                }
+                _set = 0;
+            }
+
+            /** Return true iff I have a ratchet and can move. */
+            @Override
+            boolean rotates() {
+                return true;
+            }
+
+            /** Set setting() to POSN.  */
+            @Override
+            void set(int posn) {
+                _set = posn  % (size());
+            }
+
+            /** Set setting() to character CPOSN. */
+            @Override
+            void set(char cposn) {
+                _set = ((int) (cposn - 'A')) % (size()); //remember to generalize this from 'A'
+            }
+
+            /** Returns true iff I am positioned to allow the rotor to my left
+             *  to advance. */
+            //@Override
+            boolean atNotch() {
+                //return (enigma.Permutation.indexof(_notches, (setting() + 'A')) != -1);
+                for (int i : _notches) {
+                    if (('A'+ setting()) == i)
+                        return true;
+                }
+                return false; //need fixing to all notches
+                //return (ArrayUtils.indexOf(_notches, setting()+'A')!= -1);
+            }
+
+            @Override
+            boolean atNotch(int k) {
+                //return (enigma.Permutation.indexof(_notches, (setting() + 'A')) != -1);
+                for (int i : _notches) {
+                    if (('A'+ setting() - 1) == i)
+                        return true;
+                }
+                //System.out.println("mam = " + name());
+                return false; //need fixing to all notches
+                //return (ArrayUtils.indexOf(_notches, setting()+'A')!= -1);
+            }
+
+
+
+            /** Advance me one position, if possible. By default, does nothing. */
+            @Override
+            void advance() {
+                _set = (_set + 1)  % (size());
+            }
+
+            /** Return the conversion of P (an integer in the range 0..size()-1)
+             *  according to my permutation. */
+            @Override
+            int convertForward(int p) {
+                return _permutation.wrap((_permutation.permute(_permutation.wrap(p + _set)) - _set));
+            }
+
+            /** Return the conversion of E (an integer in the range 0..size()-1)
+             *  according to the inverse of my permutation. */
+            @Override
+            int convertBackward(int e) {
+                return _permutation.wrap((_permutation.invert((e + _set) % size()) - _set));
+            }
+
+
+            /** An array representation of the notches*/
+            private int[] _notches;
+        }
+/////
+Rotor
+
+package enigma;
+
+import static enigma.EnigmaException.*;
+
+/** Superclass that represents a rotor in the enigma machine.
+ *  @author
+ */
+class Rotor {
+
+    /** A rotor named NAME whose permutation is given by PERM. */
+    //OVERRIDE (MAYBE)
+    Rotor(String name, Permutation perm) {
+        _name = name;
+        _permutation = perm;
+        _set = 0;
+
+    }
+
+    /** Return my name. */
+    String name() {
+        return _name;
+    }
+
+    /** Return my alphabet. */
+    Alphabet alphabet() {
+        return _permutation.alphabet();
+    }
+
+    /** Return my permutation. */
+    Permutation permutation() {
+        return _permutation;
+    }
+
+    /** Return the size of my alphabet. */
+    int size() {
+        return _permutation.size();
+    }
+
+    /** Return true iff I have a ratchet and can move. */
+    //OVERRIDE
+    boolean rotates() {
+        return false;
+    }
+
+    /** Return true iff I reflect. */
+    //OVERRIDE
+    boolean reflecting() {
+        return false;
+    }
+
+    /** Return my current setting. */
+    //OVERRIDE
+    int setting() {
+        return _set;
+    }
+
+    /** Set setting() to POSN.  */
+    //OVERRIDE
+    void set(int posn) {
+        _set = posn; //is posn in (0-25) or (65-90)?
+
+    }
+
+    /** Set setting() to character CPOSN. */
+    //OVERRIDE
+    void set(char cposn) {
+        _set = (int) (cposn - 'A'); //remember to generalize this from 'A'
+
+    }
+
+    /** Return the conversion of P (an integer in the range 0..size()-1)
+     *  according to my permutation. */
+    int convertForward(int p) {
+        return _permutation.permute(p + _set);
+    }
+
+    /** Return the conversion of E (an integer in the range 0..size()-1)
+     *  according to the inverse of my permutation. */
+    int convertBackward(int e) {
+        return _permutation.invert(e + _set);
+    }
+
+    /** Returns true iff I am positioned to allow the rotor to my left
+     *  to advance. */
+    //OVERRIDE
+    boolean atNotch() {
+        return false;
+    }
+
+
+    boolean atNotch(int k) {
+        return false;
+    }
+
+    /** Advance me one position, if possible. By default, does nothing. */
+    //OVERRIDE
+    void advance() {
+    }
+
+    @Override
+    public String toString() {
+        return "Rotor " + _name;
+    }
+
+    /** My name. */
+    private final String _name;
+
+    /** The permutation implemnted by this rotor in its 0 position. */
+    protected Permutation _permutation;
+
+    /** The current setting the rotor is in */
+    protected int _set;
+}
+
+
+* C GAMMA VII VIII V BAAA (AB) (CD) (EF) (GH)
+QTNZ QKXX KASX OUKY QGOO FQPO URTU NKGF QXNE YTBA LJIG WUDW VFAC GPSW GSRB XECB MEHB ZWDO WNDT TSJC WEQH F
+
+* C GAMMA VII VIII V APFT (AB) (CD) (EF) (GH)
+WXBQ ETVQ YFXY RGJE PEAP ZFOM ERNM ZZKV ZXHP XJUH PQQB MQTC VCRL DZEV WLLO VVUN GEPB CORL WRON PEAD FGTT
+
+
+
+/////
+* B BETA V VI VII AFFT (BR) (DL) (IP)
+PKMJ VVKJ YYZG ALJF ZV
+
+
+/////
+* C GAMMA VI VII VIII AAAA
+AWVB QSVM XCGX TDFU VVDT VNNO ZWBA JQYU ZIGD MICW OLPA TNIH QLYD TICI QUKK YQNP DTMR ORFH EAUP LQVF
+MARY HADA LITT LELA MBHI SWAS BLPM PMOT TAYM WLMQ VFBT SXEC EBAX IOAD DCBV JCRS NCQA MOMN ICFF HRBG
+
+
+
+* C BETA VIII III V PROM
+LXFE LKGW CUMX Z
+
+
+
+////
+* C BETA VIII III V AROM (AP) (BL) (CU) (DM)
+GCSL YEUX XCZO ZTWU YXYY QSDC QKDJ NAXH MTCE KHSV CNYC TMFG W
+AHME DTHA BETM OASP PPWD NYTX UCET EKCX TUZC VXGR RVPW QFGD M
+
+
+///
+* B BETA VI VII VIII AAAA
+WOZD JGTM MVXO GDQM WZXY MHVP FVII NTIX PFWA WUJV ABDS UUIT EQXX HNUX PPIA MWGL ZGRP UJGJ KWRM QFMK CPKX NUGO EBVH XDBL UYXS SPHW XPGF QKIY RUGT MQAK ANNB KHMH MCDG JIFO JFGH KZNV VYZE XKIW EZED OOKA QAEO LBYI WXXT FDKW QXIR NCCO RKJQ DDVK JSBD QDLA KBXB CCMV HGEK SBWR YGEY GQKA AHNN KZME JDFJ ZASM FXQR JNXB PPAK HPKE TTWZ XXNT XYXL WXRP AZFS JRRF LAXE WUBA BXKJ YPFC BBTL TDFQ CQXD VACH YEIY ZJBV DDBS DQJD SGQH CLDR VNQR BANA DCQN LQCS YQGC FFUI BZUT WXSE YFBP KFKQ EHUC KMST
+ILOV EYOU ILOV EYOU ILOV EYOU INVE RATM ZEXU TBXJ DQGK FARF GIVP PQMZ BTPO SMQM GTGG FKPB GQBO HPAA QEAE XBZI VUPG CVTH DFHJ WOEO KLCO RUOX FQOM NVMY NZAV IATP FRJT BEQU CTAQ DFDK MBDD ABWJ PBIN MPNN MFNG SEJQ UDEH MHDT GRAD JNAW TJGX HGHG CFCS WUNB RHJD BEBM EBUI ATKA BNHB JYTS IPOR ECOS AKRG HCRK RKVG CSHV JCJO ZKZG EGFH NPHQ KEEF SZZD FPND BZIR DKKB FHVK TYAP FGHF TWCP QNVD GZEZ FERG ZBXJ DXKO HFPO EIWJ ZCRO WXXV XPMN CTGE EKPQ OSWB PSWI OUED TYYQ PZPP XOPZ JJQE QGCN IJBW

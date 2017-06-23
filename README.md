@@ -32,6 +32,41 @@ java enigma.Main [configuration file] [input file] [output file]
 * B BETA III IV I AXLE (YF) (ZH)
 ```
 
+### Sample Input/Output
+```
+             Input                              |         Output
+* B BETA III IV I AXLE (HQ) (EX) (IP) (TR) (BY) | QVPQS OKOIL PUBKJ ZPISF XDW
+FROM his shoulder Hiawatha                      | BHCNS CXNUO AATZX SRCFY DGU
+Took the camera of rosewood                     | FLPNX GXIXT YJUJR CAUGE UNCFM KUF
+Made of sliding folding rosewood                | WJFGK CIIRG XODJG VCGPQ OH
+Neatly put it all together                      | ALWEB UHTZM OXIIV XUEFP RPR
+In its case it lay compactly                    | KCGVP FPYKI KITLB URVGT SFU
+Folded into nearly nothing                      | SMBNK FRIIM PDOFJ VTTUG RZM
+But he opened out the hinges                    | UVCYL FDZPG IBXRE WXUEB ZQJO
+Pushed and pulled the joints                    | YMHIP GRRE
+   and hinges                                   | GOHET UXDTW LCMMW AVNVJ VH
+Till it looked all squares                      | OUFAN TQACK
+   and oblongs                                  | KTOZZ RDABQ NNVPO IEFQA FS
+Like a complicated figure                       | VVICV UDUER EYNPF FMNBJ VGQ
+in the Second Book of Euclid                    |
+                                                | FROMH ISSHO ULDER HIAWA THA
+* B BETA III IV I AXLE (HQ) (EX) (IP) (TR) (BY) | TOOKT HECAM ERAOF ROSEW OOD
+QVPQS OKOIL PUBKJ ZPISF XDW                     | MADEO FSLID INGFO LDING ROSEW OOD
+BHCNS CXNUO AATZX SRCFY DGU                     | NEATL YPUTI TALLT OGETH ER
+FLPNX GXIXT YJUJR CAUGE UNCFM KUF               | INITS CASEI TLAYC OMPAC TLY
+WJFGK CIIRG XODJG VCGPQ OH                      | FOLDE DINTO NEARL YNOTH ING
+ALWEB UHTZM OXIIV XUEFP RPR                     | BUTHE OPENE DOUTT HEHIN GES
+KCGVP FPYKI KITLB URVGT SFU                     | PUSHE DANDP ULLED THEJO INTS
+SMBNK FRIIM PDOFJ VTTUG RZM                     | ANDHI NGES
+UVCYL FDZPG IBXRE WXUEB ZQJO                    | TILLI TLOOK EDALL SQUAR ES
+YMHIP GRRE                                      | ANDOB LONGS
+GOHET UXDTW LCMMW AVNVJ VH                      | LIKEA COMPL ICATE DFIGU RE
+OUFAN TQACK                                     | INTHE SECON DBOOK OFEUC LID
+KTOZZ RDABQ NNVPO IEFQA FS                      |
+VVICV UDUER EYNPF FMNBJ VGQ                     |
+Figure 3. Sample input and output (using the Naval cipher).
+```
+
 ## Description of the Machine
 The Enigmas effect a substitution cipher, on the letters of a message. That is, at any given time, the machine performs a permutation---a one-to-one mapping---of the alphabet onto itself. The alphabet consists solely of the 26 letters in one case (there were various conventions for spaces and punctuation
 
@@ -89,4 +124,13 @@ Each letter appears in one and only one cycle, so the mapping is unambiguous. As
 
 Figure 2 shows the permutations corresponding to the rotors used in the German Navy's Enigma machine.
 <img src="images/perm2.png" />
+
+
+### Testing
+
+The directory testing contains the scripts test-correct and test-error for testing the execution of enigma.Main.
+
+* bash test-correct F1.inp F2.inp ... will run the program for each of the message files F1.inp, F2.inp ..., comparing the results to the corresponding output files F1.out, F2.out, .... The configuration files used are F1.conf, F2.conf, .... However, if any of these is missing, the file default.conf (from the same directory) is used instead.
+* bash test-error F1.inp F2.inp ... will run the program for each of the message files F1.inp, F2.inp ..., checking that the program reports at least one error in each case. The configuration files are as for test-correct. The tests we've supplied are nowhere near adequate to test your program, so you will need to generate your own integration tests as well (we will check to see that you make an effort to test).
+
 
